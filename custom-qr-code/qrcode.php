@@ -38,7 +38,8 @@
 		if (in_array($current_post_type,$excluded_post)){
 			return $content;
 		}
-		$imageSrc = sprintf('https://api.qrserver.com/v1/create-qr-code/?size=185x185&ecc=L&qzone=1&data=%s',$current_post_url);
+		$imageDimension = apply_filters('pqc_image_dimension','185x185');
+		$imageSrc = sprintf('https://api.qrserver.com/v1/create-qr-code/?size=%s&ecc=L&qzone=1&data=%s',$imageDimension,$current_post_url);
 		$content .= sprintf('<div class="qr-code"><img src="%s" alt="%s"></div>',$imageSrc,$current_post_title);
 		return $content;
 	}add_filter('the_content','pqc_display_qr_code');

@@ -55,7 +55,8 @@
 	
 	function shortcodes_google_map($attributes){
 		$default = array(
-			'place' => 'Dhaka Museum'
+			'place' => 'Dhaka Museum',
+			'width' => apply_filters('shortcodes_gmap_width',800)
 		);
 		
 		$shortcodes_attributes = shortcode_atts($default,$attributes);
@@ -63,7 +64,7 @@
 		$map = <<<EOD
 		<div>
 		    <div>
-		        <iframe width="800" height="500"
+		        <iframe width="{$shortcodes_attributes['width']}" height="500"
 		                src="https://maps.google.com/maps?q={$shortcodes_attributes['place']}&t=&z=13&ie=UTF8&iwloc=&output=embed"
 		                frameborder="0" scrolling="no" marginheight="0" marginwidth="0">
 		        </iframe>

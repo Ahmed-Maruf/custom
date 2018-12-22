@@ -1,3 +1,6 @@
 ;(function($){
-	alert('Public js');
+	$(document).ready(function (argument) {
+		// body...
+		alert('Public Js');
+	});
 })(jQuery);

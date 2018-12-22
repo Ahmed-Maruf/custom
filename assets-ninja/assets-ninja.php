@@ -19,15 +19,28 @@
 			private $data;
 			public function __construct() {
 				$this->version = time();
+
+				add_action( $tag = 'init', $function_to_add = 'asn_init');	
 				add_action( $tag = 'plugins_loaded', $callback = array($this,'asset_ninja_load_text_domain'));
 				add_action( $tag = 'wp_enqueue_scripts', $function_to_add = array($this,'asset_ninja_front_assets'));
 
 				add_action( $tag = 'admin_enqueue_scripts', $function_to_add = array($this,'asset_ninja_admin_assets'));
 			}
 
+			public function asn_init()
+			{
+				//wp_deregister_style( $handle = 't-slider-css' );
+				//wp_register_style( $handle, $src, $deps = array, $ver = false, $media = 'all' )
+				
+			}
+
 			public function asset_ninja_admin_assets($hook)
 			{
 				# code...
+				$screen = get_current_screen();
+				if ('edit.php' == $hook && 'page' == $screen->post_type) {
+					wp_enqueue_script( $handle = 'asn-admin-js', $src = ASSETS_ADMIN_DIR . '/js/main.js', $deps = array( 'jquery' ), false, $in_footer = true );	
+				}
 			}
 
 			public function asset_ninja_load_text_domain($hook)
@@ -37,7 +50,9 @@
 
 			public function asset_ninja_front_assets($hook)
 			{
+
 				# code...
+
 				wp_enqueue_script($handle_name = 'asset_ninja_main_js', $file_src = ASSETS_PUBLIC_DIR . "/js/main.js", $deps = array('jquery','asset_ninja_another_js'), $version = null, $in_footer = true);
 
 				wp_enqueue_script($handle_name = 'asset_ninja_another_js', $file_src = ASSETS_PUBLIC_DIR . "/js/another.js", $deps = array('jquery'), $version = null, $in_footer = true);

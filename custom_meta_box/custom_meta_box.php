@@ -11,10 +11,6 @@
  * Text Domain: custom_meta_box
  * Domain Path: /languages
  */
-
-/**
- * 
- */
 class ourMetaBox
 {
 	/**
@@ -92,10 +88,16 @@ class ourMetaBox
 		# code...
 		$label = __('Location','custom_meta_box');
 		$label1 = __('Country','custom_meta_box');
+		$label2 = __('Colors','custom_meta_box');
+		$label3 = __('Select Colors','custom_meta_box');
 		$location = get_post_meta( $post_id = $post->ID, $key = 'cmb_location', $single = true);
 
 		$country = get_post_meta( $post_id = $post->ID, $key = 'cmb_country', $singe = true );
 
+		$colors = array('red','green','blue','yellow','pink','black');
+
+		$saved_colors = get_post_meta( $post_id = $post->ID, $key = 'cmb_clr', $single = true);
+		$clr_selected = get_post_meta( $post_id = $post->ID, $key = 'cmb_clr_select', $single = true );
 		# Add a hidden input with secret token to verify user input with correct permission
 		wp_nonce_field( $action = 'cmb_location', $name = 'cmb_location_field', $referer = true, $echo = true );
 
@@ -107,7 +109,34 @@ class ourMetaBox
 		<label for="cmb_country">{$label1}</label>
 		<input type="text" name="cmb_country" id="cmb_country" value={$country}>
 		</div>
+		<label>{$label2}</label>
 EOD;
+		foreach ($colors as $key => $value) {
+			# code...
+			$checked = '';
+			if ($saved_colors && in_array($value, $saved_colors)) {
+				# code...
+				$checked = 'checked';
+			}
+			$metabox_html .= <<<EOD
+			<label for="cmb_clr_{$value}">{$value}</label>
+			<input type="checkbox" name="cmb_clr[]" id="cmb_clr_{$value}" value="{$value}" {$checked}>
+EOD;
+		}
+
+		$metabox_html .= '<br><label>'.$label3.'</label><select name="cmb_clr_select" id="cmb_clr_select">';
+		foreach ($colors as $key => $value) {
+			# code...
+			$selected = '';
+			if ($value == $clr_selected) {
+				# code...
+				$selected = 'selected';
+			}
+			$metabox_html .= <<<EOD
+			<option value="{$value}" {$selected}>$value</option>
+EOD;
+		}
+		$metabox_html .= '</select>';
 		echo $metabox_html;
 	}
 
@@ -125,8 +154,12 @@ EOD;
 		}
 		$location = sanitize_text_field(isset($_POST['cmb_location'])?$_POST['cmb_location']:'');
 		$country = sanitize_text_field(isset($_POST['cmb_country'])?$_POST['cmb_country']:'');
-		update_post_meta( $post_id = $post_id, $meta_key = 'cmb_location', $meta_value = $location, $prev_value );
+		$colors = isset($_POST['cmb_clr'])?$_POST['cmb_clr']:[];
+		$clr_selected = isset($_POST['cmb_clr_select'])?$_POST['cmb_clr_select']:'';
+		update_post_meta( $post_id = $post_id, $meta_key = 'cmb_location', $meta_value = $location);
 		update_post_meta( $post_id = $post_id, $meta_key = 'cmb_country', $meta_value = $country);
+		update_post_meta( $post_id = $post_id, $meta_key = 'cmb_clr', $meta_value = $colors);
+		update_post_meta( $post_id = $post_id, $meta_key = 'cmb_clr_select', $meta_value = $clr_selected);
 
 	}
 }new ourMetaBox;

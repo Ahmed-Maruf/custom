@@ -213,8 +213,10 @@ EOD;
 	public function cmb_save_book_info($post_id)
 	{
 		# code...
-		if ($this->isSecure()) {
+		if ($this->isSecure('cmb_book_info_field','cmb_book_info',$post_id)) {
 			# code...
+			return $post_id;
 		}
+		
 	}
 }new ourMetaBox;

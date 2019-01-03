@@ -11,6 +11,12 @@
  * Text Domain: custom_meta_box
  * Domain Path: /languages
  */
+
+
+define('ASSETS_DIR', plugin_dir_url(__FILE__)."assets");
+define('ASSETS_PUBLIC_DIR', plugin_dir_url(__FILE__)."assets/public");
+define('ASSETS_ADMIN_DIR', plugin_dir_url(__FILE__)."assets/admin");
+
 class ourMetaBox
 {
 	/**
@@ -26,6 +32,12 @@ class ourMetaBox
 
 		# save meta during the post save
 		add_action( $tag = 'save_post', $function_to_add = array($this,'cmb_save_location'));
+
+		# save meta during the post save
+		add_action( $tag = 'save_post', $function_to_add = array($this, 'cmb_save_book_info'));
+
+		# add scripts to admin panel
+		add_action( $tag = 'admin_enqueue_scripts', $function_to_add = array($this, 'cmb_admin_assets'));
 	}
 
 
@@ -69,6 +81,13 @@ class ourMetaBox
 		load_plugin_textdomain( $domain = 'custom_meta_box', $deprecated = false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
 	}
 
+
+	public function cmb_admin_assets($hook)
+	{
+		# code...
+		wp_enqueue_style('cmb_admin_style', $src = ASSETS_ADMIN_DIR . '/css/style.css', $dep = null, $version = time(), $in_footer =false);
+	}
+
 	/**
 	 * [cmb_add_metabox description]
 	 * @return [null] [callback function from action action hook admin_menu]
@@ -77,6 +96,9 @@ class ourMetaBox
 	{
 		# function to add meta_box...
 		add_meta_box( $id = 'cmb_post_location', $title = __('Post Location','custom_meta_box'), $callback = array($this,'cmb_display_post_location'), $screen = 'post', $context = 'advanced', 'default','post');
+
+		# function to add meta box...
+		add_meta_box( $id = 'cmb_book_info', $title = __('Book Info','custom_meta_box'), $callback = array($this,'cmb_display_book_info'), $screen = 'book', $context = 'advanced', 'default', $args = 'post' );
 	}
 
 	/**
@@ -141,6 +163,31 @@ EOD;
 	}
 
 	/**
+	 * [cmb_display_book_info custom meta box for custom post type Book]
+	 * @param  [object] $post [description]
+	 * @return [type]       [description]
+	 */
+	public function cmb_display_book_info($post)
+	{
+		# code...
+		wp_nonce_field( $action = 'cmb_book_info', $name = 'cmb_book_info_field', $referer = true, $echo = true );
+
+		$metabox_html = <<<EOD
+		<div class="fields">
+		<div class="label_c" for="book-author">Book Author</div>
+		<div class="input_c"><input id = "book-author" type="text"></div>
+		</div>
+
+		<div class="fields">
+		<div class="label_c" for="book-isbn">Book ISBN</div>
+		<div class="input_c"><input id = "book-isbn"type="text"></div>
+		</div>
+		<div class="clearfix"></div>
+EOD;
+		echo $metabox_html;
+	}
+
+	/**
 	 * [cmb_save_location callback function from action hook save_post to save location meta information]
 	 * @param  [type] $post_id [description]
 	 * @return [$post_id]          [description]
@@ -161,5 +208,13 @@ EOD;
 		update_post_meta( $post_id = $post_id, $meta_key = 'cmb_clr', $meta_value = $colors);
 		update_post_meta( $post_id = $post_id, $meta_key = 'cmb_clr_select', $meta_value = $clr_selected);
 
+	}
+
+	public function cmb_save_book_info($post_id)
+	{
+		# code...
+		if ($this->isSecure()) {
+			# code...
+		}
 	}
 }new ourMetaBox;

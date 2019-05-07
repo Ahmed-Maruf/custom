@@ -1,3 +1,7 @@
 ;(function($){
-	console.log(phpvar);
+	$(document).ready(function (argument) {
+		// body...
+		alert('Another Js');
+		console.log(sitedata);
+	});
 })(jQuery);

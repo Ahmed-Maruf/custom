@@ -10,9 +10,9 @@
 	 */
 
 
-define("ASSETS_DIR", plugin_dir_url($file = __FILE__)."assets");
-define("ASSETS_PUBLIC_DIR",plugin_dir_url($file = __FILE__)."assets/public");
-define("ASSETS_ADMIN_DIR", plugin_dir_url($file = __FILE__)."assets/admin");
+define("ASSETS_DIR", plugin_dir_url($file = __FILE__) . "assets");
+define("ASSETS_PUBLIC_DIR", plugin_dir_url($file = __FILE__) . "assets/public");
+define("ASSETS_ADMIN_DIR", plugin_dir_url($file = __FILE__) . "assets/admin");
 
 class AssetsNinja
 {
@@ -27,6 +27,11 @@ class AssetsNinja
         add_action(
             $tag = 'wp_enqueue_scripts',
             $function_to_add = array($this, 'load_front_assets')
+        );
+
+        add_action(
+            $tag = 'admin_enqueue_scripts',
+            $function_to_add = array($this, 'load_admin_assets')
         );
     }
 
@@ -54,19 +59,38 @@ class AssetsNinja
         wp_enqueue_script(
             $handle = 'assetninja-another',
             $src = ASSETS_PUBLIC_DIR . "/js/another.js",
- 
-			$deps = array('assetninja-main'),
+
+            $deps = array('assetninja-main'),
             $ver = $this->version,
             $in_footer = true
-		);
-		
-		$data = array(
-			1
-		);
+        );
+
+        $data = array(
+            1
+        );
         wp_localize_script(
             $handle = 'assetninja-another',
             $name = 'sitedata',
             $data = $data
         );
     }
-}new AssetsNinja;
+
+    public function load_admin_assets($screen)
+    {
+        # code...
+
+        $_screen = get_current_screen();
+
+    
+        if ('edit.php' == $screen && 'page' == $_screen->post_type) {
+            wp_enqueue_script(
+                $handle = 'admin-main',
+                $src = ASSETS_ADMIN_DIR . '/js/main.js',
+                $deps = array('jquery'),
+                $ver = $this->version,
+                $in_footer = true
+            );
+        }
+    }
+}
+new AssetsNinja;
